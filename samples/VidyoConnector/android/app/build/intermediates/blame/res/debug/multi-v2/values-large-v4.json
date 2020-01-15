@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "D:\\android\\VidyoClient-AndroidSDK-caller-v3\\samples\\VidyoConnector\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
+            "outputFile": "D:\\android\\VidyoClient-AndroidSDK-caller-v4\\samples\\VidyoConnector\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
             "map": [
                 {
                     "source": "C:\\Users\\tiama\\.gradle\\caches\\transforms-1\\files-1.1\\material-1.0.0.aar\\f6371ef3131fc4cf17462a87049b2f17\\res\\values-large-v4\\values-large-v4.xml",

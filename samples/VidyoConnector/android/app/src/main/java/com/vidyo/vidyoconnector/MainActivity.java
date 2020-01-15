@@ -135,11 +135,10 @@ public class MainActivity extends Activity implements
     private String mRoomPin; // Used for VidyoCloud systems, not Vidyo.io
 
     private DatabaseReference reference;
-    private FirebaseUser firebaseUser;
-    private FirebaseAuth auth;
 
     private String token;
     private String path;
+    private int status;
     private Button stop;
 
     /*
@@ -176,10 +175,6 @@ public class MainActivity extends Activity implements
         button.setOnClickListener(this);
 
         mControlsLayout.setVisibility(View.GONE);
-
-        // Firebase setting
-        auth = FirebaseAuth.getInstance();
-        firebaseUser = auth.getCurrentUser();
 
         // get token from previous activity
         Bundle extras = getIntent().getExtras();
@@ -263,17 +258,16 @@ public class MainActivity extends Activity implements
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                    Call call = snapshot.getValue(Call.class);
-
-                    if (call.getConnected() == 1) {
+                if (dataSnapshot.hasChild("call")) {
+                    MainActivity.this.status = dataSnapshot.child("call").child("status").getValue(Integer.class);
+                    if (status == 1) {
                         changeState(VidyoConnectorState.Connected);
                     }
-                    else if (call.getConnected() == 2) {
+
+                    else if (status == 2) {
                         removeCallInDB();
                         mVidyoConnector.disconnect();
                     }
-
                 }
             }
             @Override
@@ -641,16 +635,6 @@ public class MainActivity extends Activity implements
         }
     }
 
-    public void login(String txt_email, String txt_password) {
-        auth.signInWithEmailAndPassword(txt_email, txt_password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-                    }
-                });
-    }
-
     /*
      *  Connector Events
      */
@@ -684,18 +668,12 @@ public class MainActivity extends Activity implements
             this.changeState(VidyoConnectorState.DisconnectedUnexpected);
         }
 
-        /*
-        // update Firebase "connected"
-         */
-        reference = FirebaseDatabase.getInstance().getReference(path).child("call").child("connected");
+        // update the status to 2
+        reference = FirebaseDatabase.getInstance().getReference(path);
         int newState = 2;
-        reference.setValue(newState).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                }
-            }
-        });
+        reference.child("call").child("status").setValue(newState);
+
+        // go back to previous page
         Intent intent = new Intent(getBaseContext(), StartingActivity.class);
         startActivity(intent);
     }
